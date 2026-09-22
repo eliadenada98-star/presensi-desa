@@ -1,0 +1,940 @@
+{% extends "base_perangkat.html" %}
+
+{% block content %}
+
+<style>
+
+.absen-wrapper {
+    max-width: 1000px;
+    margin: auto;
+}
+
+.absen-header {
+    margin-bottom: 25px;
+}
+
+.absen-header h1 {
+    margin: 0;
+    font-size: 30px;
+    color: #173f2b;
+}
+
+.absen-header p {
+    color: #777;
+    margin-top: 8px;
+}
+
+.absen-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 25px;
+}
+
+.card {
+    background: white;
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.07);
+}
+
+.card h2 {
+    margin-top: 0;
+    color: #173f2b;
+}
+
+.camera-box {
+    width: 100%;
+    background: #111;
+    border-radius: 15px;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+}
+
+#video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.camera-status {
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #f3f6f4;
+    color: #555;
+}
+
+.gps-box {
+    background: #f6faf7;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 20px;
+}
+
+.gps-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.gps-row:last-child {
+    border-bottom: none;
+}
+
+.gps-label {
+    color: #777;
+}
+
+.gps-value {
+    font-weight: bold;
+    color: #173f2b;
+}
+
+.status-box {
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    background: #f5f5f5;
+}
+
+.status-box strong {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.status-line {
+    padding: 5px 0;
+}
+
+.status-masuk {
+    color: #198754;
+}
+
+.status-pulang {
+    color: #dc3545;
+}
+
+.status-belum {
+    color: #777;
+}
+
+.button-group {
+    display: grid;
+    gap: 12px;
+}
+
+.btn {
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.btn-masuk {
+    background: #198754;
+    color: white;
+}
+
+.btn-pulang {
+    background: #dc3545;
+    color: white;
+}
+
+.btn:disabled {
+    background: #bbb;
+    color: #eee;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.message {
+    display: none;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.message.success {
+    display: block;
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.message.error {
+    display: block;
+    background: #f8d7da;
+    color: #842029;
+}
+
+@media (max-width: 800px) {
+
+    .absen-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+
+
+<div class="absen-wrapper">
+
+    <div class="absen-header">
+
+        <h1>📸 Absensi</h1>
+
+        <p>
+            Ambil foto dan pastikan lokasi GPS aktif
+            sebelum melakukan absensi.
+        </p>
+
+    </div>
+
+
+    <div id="message" class="message"></div>
+
+
+    <div class="absen-grid">
+
+
+        <!-- =========================================
+             KAMERA
+        ========================================== -->
+
+        <div class="card">
+
+            <h2>📷 Kamera</h2>
+
+            <div class="camera-box">
+
+                <video
+                    id="video"
+                    autoplay
+                    playsinline
+                ></video>
+
+            </div>
+
+            <div
+                id="cameraStatus"
+                class="camera-status"
+            >
+                Mengaktifkan kamera...
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             GPS + ABSEN
+        ========================================== -->
+
+        <div class="card">
+
+            <h2>📍 Lokasi & Absensi</h2>
+
+
+            <!-- GPS -->
+
+            <div class="gps-box">
+
+                <div class="gps-row">
+
+                    <span class="gps-label">
+                        Latitude
+                    </span>
+
+                    <span
+                        class="gps-value"
+                        id="latitude"
+                    >
+                        Mencari...
+                    </span>
+
+                </div>
+
+
+                <div class="gps-row">
+
+                    <span class="gps-label">
+                        Longitude
+                    </span>
+
+                    <span
+                        class="gps-value"
+                        id="longitude"
+                    >
+                        Mencari...
+                    </span>
+
+                </div>
+
+
+                <div class="gps-row">
+
+                    <span class="gps-label">
+                        Akurasi
+                    </span>
+
+                    <span
+                        class="gps-value"
+                        id="accuracy"
+                    >
+                        -
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================
+                 STATUS HARI INI
+            ====================================== -->
+
+            <div class="status-box">
+
+                <strong>
+                    Status Hari Ini
+                </strong>
+
+
+                {% if presensi %}
+
+                    {% if presensi.jam_masuk %}
+
+                        <div class="status-line status-masuk">
+
+                            🟢 <b>Absen Masuk:</b>
+                            {{ presensi.jam_masuk }}
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="status-line status-belum">
+
+                            🟡 Belum Absen Masuk
+
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if presensi.jam_pulang %}
+
+                        <div class="status-line status-pulang">
+
+                            🔴 <b>Absen Pulang:</b>
+                            {{ presensi.jam_pulang }}
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="status-line status-belum">
+
+                            🟡 Belum Absen Pulang
+
+                        </div>
+
+                    {% endif %}
+
+                {% else %}
+
+                    <div class="status-line status-belum">
+
+                        ⚪ Belum melakukan absensi.
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- =====================================
+                 TOMBOL ABSEN
+            ====================================== -->
+
+            <div class="button-group">
+
+
+                <!-- ABSEN MASUK -->
+
+                <button
+                    type="button"
+                    class="btn btn-masuk"
+                    id="btnMasuk"
+                    onclick="absen('masuk')"
+
+                    {% if presensi and presensi.jam_masuk %}
+                        disabled
+                    {% endif %}
+                >
+
+                    {% if presensi and presensi.jam_masuk %}
+
+                        ✅ SUDAH ABSEN MASUK
+
+                    {% else %}
+
+                        📥 ABSEN MASUK
+
+                    {% endif %}
+
+                </button>
+
+
+                <!-- ABSEN PULANG -->
+
+                <button
+                    type="button"
+                    class="btn btn-pulang"
+                    id="btnPulang"
+                    onclick="absen('pulang')"
+
+                    {% if not presensi or not presensi.jam_masuk or presensi.jam_pulang %}
+                        disabled
+                    {% endif %}
+                >
+
+                    {% if presensi and presensi.jam_pulang %}
+
+                        ✅ SUDAH ABSEN PULANG
+
+                    {% else %}
+
+                        📤 ABSEN PULANG
+
+                    {% endif %}
+
+                </button>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- CANVAS UNTUK FOTO -->
+
+<canvas
+    id="canvas"
+    style="display:none;"
+></canvas>
+
+
+<script>
+
+let stream = null;
+
+let latitude = null;
+let longitude = null;
+
+
+/* =====================================================
+   KAMERA
+===================================================== */
+
+async function startCamera() {
+
+    const video =
+        document.getElementById("video");
+
+    const status =
+        document.getElementById("cameraStatus");
+
+    try {
+
+        stream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video: {
+                    facingMode: "user"
+                },
+
+                audio: false
+
+            });
+
+        video.srcObject = stream;
+
+        status.innerHTML =
+            "✅ Kamera aktif. Pastikan wajah terlihat jelas.";
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        status.innerHTML =
+            "❌ Kamera tidak dapat digunakan. Izinkan akses kamera pada browser.";
+
+    }
+
+}
+
+
+/* =====================================================
+   GPS
+===================================================== */
+
+function startGPS() {
+
+    const lat =
+        document.getElementById("latitude");
+
+    const lng =
+        document.getElementById("longitude");
+
+    const acc =
+        document.getElementById("accuracy");
+
+
+    if (!navigator.geolocation) {
+
+        lat.innerHTML =
+            "GPS tidak tersedia";
+
+        lng.innerHTML =
+            "GPS tidak tersedia";
+
+        acc.innerHTML =
+            "-";
+
+        return;
+
+    }
+
+
+    navigator.geolocation.watchPosition(
+
+        function(position) {
+
+            latitude =
+                position.coords.latitude;
+
+            longitude =
+                position.coords.longitude;
+
+
+            lat.innerHTML =
+                latitude.toFixed(7);
+
+            lng.innerHTML =
+                longitude.toFixed(7);
+
+            acc.innerHTML =
+                Math.round(
+                    position.coords.accuracy
+                ) + " meter";
+
+        },
+
+
+        function(error) {
+
+            console.error(error);
+
+            lat.innerHTML =
+                "Gagal mendapatkan GPS";
+
+            lng.innerHTML =
+                "Gagal mendapatkan GPS";
+
+            acc.innerHTML =
+                "-";
+
+        },
+
+
+        {
+
+            enableHighAccuracy: true,
+
+            maximumAge: 0,
+
+            timeout: 10000
+
+        }
+
+    );
+
+}
+
+
+/* =====================================================
+   PESAN
+===================================================== */
+
+function showMessage(
+    message,
+    type
+) {
+
+    const box =
+        document.getElementById("message");
+
+    box.innerHTML =
+        message;
+
+    box.className =
+        "message " + type;
+
+}
+
+
+/* =====================================================
+   AMBIL FOTO
+===================================================== */
+
+function ambilFoto() {
+
+    const video =
+        document.getElementById("video");
+
+    const canvas =
+        document.getElementById("canvas");
+
+
+    if (
+        !video.videoWidth ||
+        !video.videoHeight
+    ) {
+
+        return null;
+
+    }
+
+
+    canvas.width =
+        video.videoWidth;
+
+    canvas.height =
+        video.videoHeight;
+
+
+    const context =
+        canvas.getContext("2d");
+
+
+    context.drawImage(
+
+        video,
+
+        0,
+
+        0,
+
+        canvas.width,
+
+        canvas.height
+
+    );
+
+
+    return canvas.toDataURL(
+        "image/jpeg",
+        0.85
+    );
+
+}
+
+
+/* =====================================================
+   ABSEN
+===================================================== */
+
+async function absen(jenis) {
+
+    const btnMasuk =
+        document.getElementById("btnMasuk");
+
+    const btnPulang =
+        document.getElementById("btnPulang");
+
+
+    /* -----------------------------------------------
+       CEK GPS
+    ----------------------------------------------- */
+
+    if (
+        latitude === null ||
+        longitude === null
+    ) {
+
+        showMessage(
+
+            "❌ Lokasi GPS belum tersedia. Tunggu sampai lokasi ditemukan.",
+
+            "error"
+
+        );
+
+        return;
+
+    }
+
+
+    /* -----------------------------------------------
+       CEK KAMERA
+    ----------------------------------------------- */
+
+    const video =
+        document.getElementById("video");
+
+
+    if (
+        !video.videoWidth ||
+        !video.videoHeight
+    ) {
+
+        showMessage(
+
+            "❌ Kamera belum siap.",
+
+            "error"
+
+        );
+
+        return;
+
+    }
+
+
+    /* -----------------------------------------------
+       KONFIRMASI
+    ----------------------------------------------- */
+
+    const teksJenis =
+        jenis === "masuk"
+            ? "masuk"
+            : "pulang";
+
+
+    if (
+        !confirm(
+            "Yakin ingin melakukan absen "
+            + teksJenis
+            + "?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    /* -----------------------------------------------
+       DISABLE SEMENTARA
+    ----------------------------------------------- */
+
+    btnMasuk.disabled = true;
+
+    btnPulang.disabled = true;
+
+
+    showMessage(
+
+        "⏳ Menyimpan absensi...",
+
+        "success"
+
+    );
+
+
+    /* -----------------------------------------------
+       AMBIL FOTO
+    ----------------------------------------------- */
+
+    const foto =
+        ambilFoto();
+
+
+    if (!foto) {
+
+        btnMasuk.disabled = false;
+        btnPulang.disabled = false;
+
+        showMessage(
+            "❌ Kamera belum siap mengambil foto.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /* -----------------------------------------------
+       FORM DATA
+    ----------------------------------------------- */
+
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "jenis",
+        jenis
+    );
+
+
+    formData.append(
+        "foto",
+        foto
+    );
+
+
+    formData.append(
+        "latitude",
+        latitude
+    );
+
+
+    formData.append(
+        "longitude",
+        longitude
+    );
+
+
+    /* -----------------------------------------------
+       KIRIM KE SERVER
+    ----------------------------------------------- */
+
+    try {
+
+        const response =
+            await fetch(
+
+                "{{ url_for('simpan_absen') }}",
+
+                {
+
+                    method: "POST",
+
+                    body: formData
+
+                }
+
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (result.success) {
+
+            showMessage(
+
+                "✅ " + result.message,
+
+                "success"
+
+            );
+
+
+            /*
+             * Tunggu sebentar lalu reload.
+             *
+             * Setelah reload:
+             *
+             * - Absen masuk sudah tersimpan
+             * - tombol masuk menjadi disabled
+             * - tombol pulang otomatis aktif
+             */
+
+            setTimeout(
+
+                function() {
+
+                    window.location.reload();
+
+                },
+
+                1000
+
+            );
+
+        }
+
+
+        else {
+
+            showMessage(
+
+                "❌ " + result.message,
+
+                "error"
+
+            );
+
+
+            /*
+             * Kembalikan tombol.
+             */
+
+            btnMasuk.disabled =
+                false;
+
+            btnPulang.disabled =
+                false;
+
+        }
+
+
+    }
+
+
+    catch (error) {
+
+        console.error(error);
+
+
+        showMessage(
+
+            "❌ Terjadi kesalahan saat mengirim absensi.",
+
+            "error"
+
+        );
+
+
+        btnMasuk.disabled =
+            false;
+
+        btnPulang.disabled =
+            false;
+
+    }
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+startCamera();
+
+startGPS();
+
+</script>
+
+{% endblock %}

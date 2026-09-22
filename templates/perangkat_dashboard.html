@@ -1,0 +1,257 @@
+{% extends "base_perangkat.html" %}
+
+{% block content %}
+
+<style>
+
+.dashboard-wrapper {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.welcome {
+    background: linear-gradient(
+        135deg,
+        #14532d,
+        #198754
+    );
+
+    color: white;
+
+    padding: 30px;
+
+    border-radius: 20px;
+
+    margin-bottom: 25px;
+}
+
+.welcome h1 {
+    margin: 0;
+    font-size: 30px;
+}
+
+.welcome p {
+    margin-bottom: 0;
+    opacity: .9;
+}
+
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.status-card {
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.07);
+}
+
+.status-card h3 {
+    margin-top: 0;
+    color: #555;
+}
+
+.status-time {
+    font-size: 30px;
+    font-weight: bold;
+    color: #173f2b;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.menu-card {
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    text-decoration: none;
+    color: #222;
+    box-shadow: 0 8px 25px rgba(0,0,0,.07);
+    transition: .2s;
+}
+
+.menu-card:hover {
+    transform: translateY(-4px);
+}
+
+.menu-icon {
+    font-size: 35px;
+    margin-bottom: 15px;
+}
+
+.menu-card h3 {
+    margin: 0 0 8px;
+}
+
+.menu-card p {
+    margin: 0;
+    color: #777;
+}
+
+@media(max-width: 800px) {
+
+    .status-grid,
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+
+
+<div class="dashboard-wrapper">
+
+
+    <!-- WELCOME -->
+
+    <div class="welcome">
+
+        <h1>
+            Selamat Datang,
+            {{ perangkat.nama }}
+        </h1>
+
+        <p>
+            Sistem Presensi Perangkat Desa
+        </p>
+
+    </div>
+
+
+    <!-- STATUS -->
+
+    <div class="status-grid">
+
+
+        <div class="status-card">
+
+            <h3>
+                🟢 Jam Masuk
+            </h3>
+
+            {% if presensi and presensi.jam_masuk %}
+
+                <div class="status-time">
+                    {{ presensi.jam_masuk }}
+                </div>
+
+            {% else %}
+
+                <div class="status-time">
+                    --
+                </div>
+
+                <p>
+                    Belum melakukan absen masuk.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="status-card">
+
+            <h3>
+                🔴 Jam Pulang
+            </h3>
+
+            {% if presensi and presensi.jam_pulang %}
+
+                <div class="status-time">
+                    {{ presensi.jam_pulang }}
+                </div>
+
+            {% else %}
+
+                <div class="status-time">
+                    --
+                </div>
+
+                <p>
+                    Belum melakukan absen pulang.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- MENU -->
+
+    <div class="menu-grid">
+
+
+        <a
+            href="{{ url_for('perangkat_absen') }}"
+            class="menu-card"
+        >
+
+            <div class="menu-icon">
+                📸
+            </div>
+
+            <h3>
+                Absen Sekarang
+            </h3>
+
+            <p>
+                Ambil foto dan lokasi GPS.
+            </p>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('perangkat_riwayat') }}"
+            class="menu-card"
+        >
+
+            <div class="menu-icon">
+                📋
+            </div>
+
+            <h3>
+                Riwayat
+            </h3>
+
+            <p>
+                Lihat riwayat kehadiran.
+            </p>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('perangkat_profil') }}"
+            class="menu-card"
+        >
+
+            <div class="menu-icon">
+                👤
+            </div>
+
+            <h3>
+                Profil
+            </h3>
+
+            <p>
+                Lihat data profil.
+            </p>
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

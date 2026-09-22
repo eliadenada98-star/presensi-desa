@@ -1,0 +1,1234 @@
+{% extends "base_perangkat.html" %}
+
+{% block title %}
+Riwayat Presensi
+{% endblock %}
+
+{% block page_title %}
+Riwayat Presensi
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .riwayat-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-bottom: 40px;
+    }
+
+    /* =========================================
+       HEADER
+    ========================================= */
+
+    .riwayat-header {
+        background:
+            linear-gradient(
+                135deg,
+                #0f766e,
+                #115e59
+            );
+
+        color: white;
+
+        padding: 28px;
+
+        border-radius: 20px;
+
+        margin-bottom: 25px;
+
+        box-shadow:
+            0 10px 30px
+            rgba(15, 118, 110, .18);
+    }
+
+    .riwayat-header h1 {
+        margin: 0 0 8px 0;
+
+        font-size: 27px;
+    }
+
+    .riwayat-header p {
+        margin: 0;
+
+        opacity: .9;
+
+        font-size: 14px;
+    }
+
+
+    /* =========================================
+       STATISTIK
+    ========================================= */
+
+    .stat-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 18px;
+
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        background: white;
+
+        border-radius: 16px;
+
+        padding: 20px;
+
+        border:
+            1px solid #e2e8f0;
+
+        box-shadow:
+            0 5px 20px
+            rgba(15, 23, 42, .05);
+    }
+
+    .stat-icon {
+        width: 45px;
+        height: 45px;
+
+        border-radius: 12px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        background: #ccfbf1;
+
+        color: #0f766e;
+
+        font-size: 22px;
+
+        margin-bottom: 12px;
+    }
+
+    .stat-number {
+        font-size: 25px;
+
+        font-weight: 800;
+
+        color: #0f172a;
+
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        color: #64748b;
+
+        font-size: 13px;
+    }
+
+
+    /* =========================================
+       CARD
+    ========================================= */
+
+    .card {
+        background: white;
+
+        border-radius: 18px;
+
+        padding: 24px;
+
+        border:
+            1px solid #e2e8f0;
+
+        box-shadow:
+            0 5px 20px
+            rgba(15, 23, 42, .05);
+
+        margin-bottom: 20px;
+    }
+
+    .card-header {
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        margin-bottom: 20px;
+
+        gap: 15px;
+    }
+
+    .card-title {
+        font-size: 19px;
+
+        font-weight: 700;
+
+        color: #0f172a;
+    }
+
+    .card-subtitle {
+        font-size: 13px;
+
+        color: #64748b;
+
+        margin-top: 4px;
+    }
+
+
+    /* =========================================
+       TABEL
+    ========================================= */
+
+    .table-wrapper {
+        width: 100%;
+
+        overflow-x: auto;
+    }
+
+    .riwayat-table {
+        width: 100%;
+
+        min-width: 900px;
+
+        border-collapse: collapse;
+    }
+
+    .riwayat-table th {
+        background: #f8fafc;
+
+        color: #475569;
+
+        font-size: 12px;
+
+        font-weight: 700;
+
+        padding: 14px 12px;
+
+        text-align: left;
+
+        border-bottom:
+            1px solid #e2e8f0;
+
+        white-space: nowrap;
+    }
+
+    .riwayat-table td {
+        padding: 15px 12px;
+
+        border-bottom:
+            1px solid #f1f5f9;
+
+        vertical-align: middle;
+
+        color: #334155;
+
+        font-size: 13px;
+    }
+
+    .riwayat-table tbody tr {
+        transition: .15s;
+    }
+
+    .riwayat-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+
+    /* =========================================
+       TANGGAL
+    ========================================= */
+
+    .tanggal {
+        font-weight: 700;
+
+        color: #0f172a;
+    }
+
+    .hari {
+        display: block;
+
+        color: #64748b;
+
+        font-size: 11px;
+
+        margin-top: 3px;
+    }
+
+
+    /* =========================================
+       JAM
+    ========================================= */
+
+    .jam {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 5px;
+
+        background: #ecfdf5;
+
+        color: #047857;
+
+        padding: 7px 10px;
+
+        border-radius: 8px;
+
+        font-weight: 700;
+
+        font-size: 12px;
+    }
+
+    .jam-pulang {
+        background: #eff6ff;
+
+        color: #1d4ed8;
+    }
+
+    .belum {
+        color: #94a3b8;
+
+        font-size: 12px;
+
+        font-style: italic;
+    }
+
+
+    /* =========================================
+       FOTO
+    ========================================= */
+
+    .foto-presensi {
+        width: 70px;
+
+        height: 70px;
+
+        border-radius: 12px;
+
+        object-fit: cover;
+
+        border: 2px solid #e2e8f0;
+
+        cursor: pointer;
+
+        transition: .2s;
+
+        background: #f8fafc;
+    }
+
+    .foto-presensi:hover {
+        transform: scale(1.06);
+
+        border-color: #0f766e;
+
+        box-shadow:
+            0 5px 15px
+            rgba(0, 0, 0, .15);
+    }
+
+    .tanpa-foto {
+        width: 70px;
+
+        height: 70px;
+
+        border-radius: 12px;
+
+        background: #f1f5f9;
+
+        color: #94a3b8;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        text-align: center;
+
+        font-size: 10px;
+
+        border:
+            1px dashed #cbd5e1;
+    }
+
+
+    /* =========================================
+       STATUS
+    ========================================= */
+
+    .status {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 5px;
+
+        padding: 6px 11px;
+
+        border-radius: 20px;
+
+        font-size: 11px;
+
+        font-weight: 700;
+    }
+
+    .status-hadir {
+        background: #dcfce7;
+
+        color: #166534;
+    }
+
+    .status-alpha {
+        background: #fee2e2;
+
+        color: #991b1b;
+    }
+
+    .status-izin {
+        background: #fef3c7;
+
+        color: #92400e;
+    }
+
+
+    /* =========================================
+       LOKASI
+    ========================================= */
+
+    .lokasi {
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 5px;
+
+        padding: 6px 9px;
+
+        border-radius: 8px;
+
+        background: #f1f5f9;
+
+        color: #475569;
+
+        font-size: 11px;
+    }
+
+
+    /* =========================================
+       EMPTY
+    ========================================= */
+
+    .empty-state {
+        text-align: center;
+
+        padding: 65px 20px;
+
+        color: #64748b;
+    }
+
+    .empty-icon {
+        font-size: 55px;
+
+        margin-bottom: 15px;
+    }
+
+    .empty-title {
+        font-size: 18px;
+
+        font-weight: 700;
+
+        color: #334155;
+
+        margin-bottom: 7px;
+    }
+
+    .empty-text {
+        font-size: 13px;
+    }
+
+
+    /* =========================================
+       MODAL FOTO
+    ========================================= */
+
+    .modal {
+        display: none;
+
+        position: fixed;
+
+        z-index: 9999;
+
+        left: 0;
+        top: 0;
+
+        width: 100%;
+        height: 100%;
+
+        background:
+            rgba(0, 0, 0, .80);
+
+        align-items: center;
+
+        justify-content: center;
+
+        padding: 20px;
+    }
+
+    .modal.show {
+        display: flex;
+    }
+
+    .modal-content {
+        position: relative;
+
+        max-width: 850px;
+
+        max-height: 90vh;
+
+        text-align: center;
+    }
+
+    .modal-image {
+        max-width: 100%;
+
+        max-height: 80vh;
+
+        border-radius: 15px;
+
+        object-fit: contain;
+
+        box-shadow:
+            0 10px 40px
+            rgba(0, 0, 0, .40);
+    }
+
+    .modal-close {
+        position: absolute;
+
+        right: -15px;
+
+        top: -15px;
+
+        width: 40px;
+
+        height: 40px;
+
+        border-radius: 50%;
+
+        border: none;
+
+        background: white;
+
+        color: #334155;
+
+        font-size: 22px;
+
+        cursor: pointer;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        box-shadow:
+            0 3px 10px
+            rgba(0, 0, 0, .20);
+    }
+
+    .modal-close:hover {
+        background: #fee2e2;
+
+        color: #dc2626;
+    }
+
+    .modal-caption {
+        color: white;
+
+        margin-top: 12px;
+
+        font-size: 14px;
+
+        font-weight: 600;
+    }
+
+
+    /* =========================================
+       RESPONSIVE
+    ========================================= */
+
+    @media (max-width: 800px) {
+
+        .stat-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .riwayat-header {
+            padding: 23px;
+        }
+
+        .riwayat-header h1 {
+            font-size: 23px;
+        }
+
+        .card {
+            padding: 17px;
+        }
+
+    }
+
+</style>
+
+
+<div class="riwayat-container">
+
+
+    <!-- =====================================
+         HEADER
+    ====================================== -->
+
+    <div class="riwayat-header">
+
+        <h1>
+            📋 Riwayat Presensi
+        </h1>
+
+        <p>
+            Lihat seluruh riwayat presensi
+            Anda beserta foto masuk dan foto pulang.
+        </p>
+
+    </div>
+
+
+    <!-- =====================================
+         HITUNG STATISTIK
+    ====================================== -->
+
+    {% set total_data = data|length %}
+
+    {% set total_masuk = namespace(value=0) %}
+
+    {% set total_pulang = namespace(value=0) %}
+
+
+    {% for item in data %}
+
+        {% if item.jam_masuk %}
+            {% set total_masuk.value =
+                total_masuk.value + 1 %}
+        {% endif %}
+
+        {% if item.jam_pulang %}
+            {% set total_pulang.value =
+                total_pulang.value + 1 %}
+        {% endif %}
+
+    {% endfor %}
+
+
+    <div class="stat-grid">
+
+
+        <!-- TOTAL -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                📅
+            </div>
+
+            <div class="stat-number">
+                {{ total_data }}
+            </div>
+
+            <div class="stat-label">
+                Total Hari Presensi
+            </div>
+
+        </div>
+
+
+        <!-- MASUK -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🟢
+            </div>
+
+            <div class="stat-number">
+                {{ total_masuk.value }}
+            </div>
+
+            <div class="stat-label">
+                Sudah Absen Masuk
+            </div>
+
+        </div>
+
+
+        <!-- PULANG -->
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🔵
+            </div>
+
+            <div class="stat-number">
+                {{ total_pulang.value }}
+            </div>
+
+            <div class="stat-label">
+                Sudah Absen Pulang
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================
+         RIWAYAT
+    ====================================== -->
+
+    <div class="card">
+
+
+        <div class="card-header">
+
+            <div>
+
+                <div class="card-title">
+                    📜 Daftar Riwayat
+                </div>
+
+                <div class="card-subtitle">
+                    Foto dapat diklik untuk melihat
+                    ukuran lebih besar.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {% if data and data|length > 0 %}
+
+
+        <div class="table-wrapper">
+
+            <table class="riwayat-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            NO
+                        </th>
+
+                        <th>
+                            TANGGAL
+                        </th>
+
+                        <th>
+                            FOTO MASUK
+                        </th>
+
+                        <th>
+                            JAM MASUK
+                        </th>
+
+                        <th>
+                            FOTO PULANG
+                        </th>
+
+                        <th>
+                            JAM PULANG
+                        </th>
+
+                        <th>
+                            LOKASI
+                        </th>
+
+                        <th>
+                            STATUS
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                {% for item in data %}
+
+
+                    <tr>
+
+
+                        <!-- NO -->
+
+                        <td>
+
+                            {{ loop.index }}
+
+                        </td>
+
+
+                        <!-- TANGGAL -->
+
+                        <td>
+
+                            <div class="tanggal">
+
+                                {% if item.tanggal %}
+
+                                    {% set tanggal =
+                                        item.tanggal
+                                        |replace('-', '/') %}
+
+                                    {{ tanggal }}
+
+                                {% else %}
+
+                                    -
+
+                                {% endif %}
+
+                            </div>
+
+                            <span
+                                class="hari"
+                                data-date="{{ item.tanggal }}"
+                            >
+                            </span>
+
+                        </td>
+
+
+                        <!-- FOTO MASUK -->
+
+                        <td>
+
+                            {% if item.foto_masuk %}
+
+                                <img
+                                    src="{{ url_for(
+                                        'static',
+                                        filename=item.foto_masuk
+                                    ) }}"
+                                    class="foto-presensi"
+                                    alt="Foto Absen Masuk"
+                                    onclick="openModal(
+                                        this.src,
+                                        'Foto Absen Masuk'
+                                    )"
+                                >
+
+                            {% else %}
+
+                                <div class="tanpa-foto">
+                                    Tidak ada foto
+                                </div>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- JAM MASUK -->
+
+                        <td>
+
+                            {% if item.jam_masuk %}
+
+                                <span class="jam">
+
+                                    🕐
+
+                                    {{ item.jam_masuk }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="belum">
+                                    Belum absen
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- FOTO PULANG -->
+
+                        <td>
+
+                            {% if item.foto_pulang %}
+
+                                <img
+                                    src="{{ url_for(
+                                        'static',
+                                        filename=item.foto_pulang
+                                    ) }}"
+                                    class="foto-presensi"
+                                    alt="Foto Absen Pulang"
+                                    onclick="openModal(
+                                        this.src,
+                                        'Foto Absen Pulang'
+                                    )"
+                                >
+
+                            {% else %}
+
+                                <div class="tanpa-foto">
+                                    Belum ada foto
+                                </div>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- JAM PULANG -->
+
+                        <td>
+
+                            {% if item.jam_pulang %}
+
+                                <span
+                                    class="jam jam-pulang"
+                                >
+
+                                    🕐
+
+                                    {{ item.jam_pulang }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="belum">
+                                    Belum absen
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- LOKASI -->
+
+                        <td>
+
+                            {% if
+                                item.latitude_masuk
+                                and
+                                item.longitude_masuk
+                            %}
+
+                                <span class="lokasi">
+
+                                    📍
+
+                                    Ada GPS
+
+                                </span>
+
+                            {% elif
+                                item.latitude
+                                and
+                                item.longitude
+                            %}
+
+                                <span class="lokasi">
+
+                                    📍
+
+                                    Ada GPS
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="belum">
+                                    Tidak tersedia
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            {% if item.status == "Hadir" %}
+
+                                <span
+                                    class="status status-hadir"
+                                >
+
+                                    ✓ Hadir
+
+                                </span>
+
+                            {% elif item.status == "Izin" %}
+
+                                <span
+                                    class="status status-izin"
+                                >
+
+                                    ℹ Izin
+
+                                </span>
+
+                            {% elif item.status == "Alpha" %}
+
+                                <span
+                                    class="status status-alpha"
+                                >
+
+                                    ✕ Alpha
+
+                                </span>
+
+                            {% else %}
+
+                                <span
+                                    class="status status-hadir"
+                                >
+
+                                    ✓
+                                    {{ item.status or "Hadir" }}
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                    </tr>
+
+
+                {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+
+        <!-- =================================
+             BELUM ADA DATA
+        ================================== -->
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                📭
+            </div>
+
+            <div class="empty-title">
+                Belum Ada Riwayat Presensi
+            </div>
+
+            <div class="empty-text">
+                Riwayat presensi akan muncul
+                setelah Anda melakukan absen.
+            </div>
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</div>
+
+
+<!-- =========================================
+     MODAL FOTO
+========================================= -->
+
+<div
+    class="modal"
+    id="fotoModal"
+    onclick="closeModal()"
+>
+
+    <div
+        class="modal-content"
+        onclick="event.stopPropagation()"
+    >
+
+        <button
+            type="button"
+            class="modal-close"
+            onclick="closeModal()"
+        >
+            ×
+        </button>
+
+        <img
+            id="modalImage"
+            class="modal-image"
+            src=""
+            alt="Foto Presensi"
+        >
+
+        <div
+            id="modalCaption"
+            class="modal-caption"
+        >
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   MODAL FOTO
+========================================= */
+
+function openModal(
+    imageSrc,
+    caption
+) {
+
+    const modal =
+        document.getElementById(
+            "fotoModal"
+        );
+
+    const image =
+        document.getElementById(
+            "modalImage"
+        );
+
+    const captionElement =
+        document.getElementById(
+            "modalCaption"
+        );
+
+    image.src = imageSrc;
+
+    captionElement.innerText =
+        caption;
+
+    modal.classList.add(
+        "show"
+    );
+
+}
+
+
+function closeModal() {
+
+    const modal =
+        document.getElementById(
+            "fotoModal"
+        );
+
+    const image =
+        document.getElementById(
+            "modalImage"
+        );
+
+    modal.classList.remove(
+        "show"
+    );
+
+    image.src = "";
+
+}
+
+
+/* =========================================
+   ESC UNTUK TUTUP FOTO
+========================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeModal();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   NAMA HARI
+========================================= */
+
+document
+    .querySelectorAll(".hari")
+    .forEach(function(element) {
+
+        const tanggal =
+            element.dataset.date;
+
+        if (!tanggal) {
+            return;
+        }
+
+        const parts =
+            tanggal.split("-");
+
+        if (parts.length !== 3) {
+            return;
+        }
+
+        const date =
+            new Date(
+                Number(parts[0]),
+                Number(parts[1]) - 1,
+                Number(parts[2])
+            );
+
+        const hari = [
+            "Minggu",
+            "Senin",
+            "Selasa",
+            "Rabu",
+            "Kamis",
+            "Jumat",
+            "Sabtu"
+        ];
+
+        element.innerText =
+            hari[date.getDay()];
+
+    });
+
+</script>
+
+{% endblock %}

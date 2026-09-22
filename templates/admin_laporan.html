@@ -1,0 +1,680 @@
+{% extends "base_admin.html" %}
+
+{% block title %}
+Laporan Presensi
+{% endblock %}
+
+{% block page_title %}
+📊 Laporan Presensi
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .laporan-wrapper {
+        width: 100%;
+    }
+
+    .laporan-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+
+    .laporan-header h2 {
+        margin: 0 0 6px 0;
+        font-size: 25px;
+        color: #0f172a;
+    }
+
+    .laporan-header p {
+        margin: 0;
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    /* FILTER */
+
+    .filter-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 18px;
+    }
+
+    .filter-form {
+        display: flex;
+        align-items: end;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .filter-group label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #334155;
+    }
+
+    .filter-group input {
+        width: 180px;
+        height: 42px;
+        box-sizing: border-box;
+        padding: 0 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        background: white;
+        color: #0f172a;
+        outline: none;
+    }
+
+    .filter-group input:focus {
+        border-color: #2563eb;
+    }
+
+    .btn {
+        height: 42px;
+        padding: 0 17px;
+        border: none;
+        border-radius: 9px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        text-decoration: none;
+        box-sizing: border-box;
+    }
+
+    .btn-filter {
+        background: #2563eb;
+        color: white;
+    }
+
+    .btn-filter:hover {
+        background: #1d4ed8;
+    }
+
+    .btn-reset {
+        background: #e2e8f0;
+        color: #334155;
+    }
+
+    .btn-reset:hover {
+        background: #cbd5e1;
+    }
+
+    /* DOWNLOAD */
+
+    .download-box {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+
+    .btn-word {
+        background: #2563eb;
+        color: white;
+    }
+
+    .btn-word:hover {
+        background: #1d4ed8;
+    }
+
+    .btn-excel {
+        background: #16a34a;
+        color: white;
+    }
+
+    .btn-excel:hover {
+        background: #15803d;
+    }
+
+    /* INFO */
+
+    .info-row {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .info-card {
+        min-width: 190px;
+        padding: 17px 20px;
+        border: 1px solid #e2e8f0;
+        border-radius: 13px;
+        background: white;
+    }
+
+    .info-label {
+        color: #64748b;
+        font-size: 12px;
+        margin-bottom: 6px;
+    }
+
+    .info-value {
+        color: #0f172a;
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+    /* PERIODE */
+
+    .periode {
+        display: inline-block;
+        margin-bottom: 18px;
+        padding: 7px 12px;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    /* TABLE */
+
+    .table-container {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid #e2e8f0;
+        border-radius: 13px;
+        background: white;
+    }
+
+    .laporan-table {
+        width: 100%;
+        min-width: 950px;
+        border-collapse: collapse;
+    }
+
+    .laporan-table thead th {
+        padding: 14px 13px;
+        background: #f1f5f9;
+        color: #334155;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 12px;
+        font-weight: 800;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .laporan-table tbody td {
+        padding: 13px;
+        border-bottom: 1px solid #e2e8f0;
+        color: #334155;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .laporan-table tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .laporan-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .nama {
+        color: #0f172a;
+        font-weight: 700;
+    }
+
+    .nik {
+        color: #475569;
+        font-family: monospace;
+    }
+
+    .jam {
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-hadir {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: #dcfce7;
+        color: #166534;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .status-lain {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: #fef3c7;
+        color: #92400e;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .kosong {
+        color: #94a3b8;
+    }
+
+    /* EMPTY */
+
+    .empty {
+        text-align: center;
+        padding: 65px 20px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 14px;
+        background: #f8fafc;
+    }
+
+    .empty-icon {
+        font-size: 48px;
+        margin-bottom: 12px;
+    }
+
+    .empty h3 {
+        margin: 0 0 8px 0;
+        color: #334155;
+    }
+
+    .empty p {
+        margin: 0;
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-group {
+            width: 100%;
+        }
+
+        .filter-group input {
+            width: 100%;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .download-box {
+            flex-direction: column;
+        }
+
+        .download-box .btn {
+            width: 100%;
+        }
+
+    }
+
+</style>
+
+
+<div class="laporan-wrapper">
+
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- ================================================= -->
+
+    <div class="laporan-header">
+
+        <div>
+
+            <h2>
+                📊 Laporan Presensi
+            </h2>
+
+            <p>
+                Rekap data kehadiran perangkat desa.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- FILTER TANGGAL -->
+    <!-- ================================================= -->
+
+    <div class="filter-box">
+
+        <form
+            method="GET"
+            action="{{ url_for('admin_laporan') }}"
+            class="filter-form"
+        >
+
+            <div class="filter-group">
+
+                <label>
+                    Dari Tanggal
+                </label>
+
+                <input
+                    type="date"
+                    name="dari"
+                    value="{{ dari }}"
+                >
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label>
+                    Sampai Tanggal
+                </label>
+
+                <input
+                    type="date"
+                    name="sampai"
+                    value="{{ sampai }}"
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-filter"
+            >
+                🔎 Tampilkan
+            </button>
+
+
+            <a
+                href="{{ url_for('admin_laporan') }}"
+                class="btn btn-reset"
+            >
+                ↻ Reset
+            </a>
+
+        </form>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- DOWNLOAD -->
+    <!-- ================================================= -->
+
+    <div class="download-box">
+
+        <a
+            href="{{ url_for(
+                'download_laporan_word',
+                dari=dari,
+                sampai=sampai
+            ) }}"
+            class="btn btn-word"
+        >
+            📝 Download Word
+        </a>
+
+
+        <a
+            href="{{ url_for(
+                'download_laporan_excel',
+                dari=dari,
+                sampai=sampai
+            ) }}"
+            class="btn btn-excel"
+        >
+            📊 Download Excel
+        </a>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- PERIODE -->
+    <!-- ================================================= -->
+
+    {% if dari or sampai %}
+
+    <div class="periode">
+
+        📅 Periode:
+
+        {% if dari %}
+            {{ dari }}
+        {% else %}
+            Awal
+        {% endif %}
+
+        &nbsp; s/d &nbsp;
+
+        {% if sampai %}
+            {{ sampai }}
+        {% else %}
+            Sekarang
+        {% endif %}
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ================================================= -->
+    <!-- DATA ADA -->
+    <!-- ================================================= -->
+
+    {% if laporan %}
+
+        <div class="info-row">
+
+            <div class="info-card">
+
+                <div class="info-label">
+                    Total Data Presensi
+                </div>
+
+                <div class="info-value">
+                    {{ laporan|length }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- TABEL -->
+        <!-- ================================================= -->
+
+        <div class="table-container">
+
+            <table class="laporan-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            No
+                        </th>
+
+                        <th>
+                            Tanggal
+                        </th>
+
+                        <th>
+                            Nama
+                        </th>
+
+                        <th>
+                            NIK
+                        </th>
+
+                        <th>
+                            Jabatan
+                        </th>
+
+                        <th>
+                            Jam Masuk
+                        </th>
+
+                        <th>
+                            Jam Pulang
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for item in laporan %}
+
+                    <tr>
+
+                        <td>
+                            {{ loop.index }}
+                        </td>
+
+
+                        <td>
+                            {{ item["tanggal"] or "-" }}
+                        </td>
+
+
+                        <td>
+
+                            <span class="nama">
+                                {{ item["nama"] or "-" }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="nik">
+                                {{ item["nik"] or "-" }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            {{ item["jabatan"] or "-" }}
+                        </td>
+
+
+                        <td>
+
+                            {% if item["jam_masuk"] %}
+
+                                <span class="jam">
+                                    {{ item["jam_masuk"] }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="kosong">
+                                    -
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if item["jam_pulang"] %}
+
+                                <span class="jam">
+                                    {{ item["jam_pulang"] }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="kosong">
+                                    -
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if item["status"] == "Hadir" %}
+
+                                <span class="status-hadir">
+                                    ✓ Hadir
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-lain">
+                                    {{ item["status"] or "-" }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    {% else %}
+
+
+        <!-- ================================================= -->
+        <!-- DATA KOSONG -->
+        <!-- ================================================= -->
+
+        <div class="empty">
+
+            <div class="empty-icon">
+                📊
+            </div>
+
+            <h3>
+                Belum Ada Laporan
+            </h3>
+
+            <p>
+                Belum ada data presensi pada periode
+                yang dipilih.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

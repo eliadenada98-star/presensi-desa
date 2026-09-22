@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+        Admin - Presensi Desa
+        {% endblock %}
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        /* =========================================
+           LAYOUT
+        ========================================= */
+
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* =========================================
+           SIDEBAR
+        ========================================= */
+
+        .sidebar {
+            width: 260px;
+            background:
+                linear-gradient(
+                    180deg,
+                    #064e3b,
+                    #065f46,
+                    #047857
+                );
+
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            padding: 24px 16px;
+
+            overflow-y: auto;
+
+            box-shadow:
+                5px 0 20px rgba(0, 0, 0, .08);
+
+            z-index: 1000;
+        }
+
+        .sidebar-logo {
+            text-align: center;
+            padding: 10px 5px 28px;
+        }
+
+        .logo-icon {
+            width: 65px;
+            height: 65px;
+
+            margin: 0 auto 12px;
+
+            border-radius: 18px;
+
+            background: white;
+            color: #047857;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 32px;
+
+            box-shadow:
+                0 8px 20px rgba(0, 0, 0, .15);
+        }
+
+        .sidebar-logo h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-logo p {
+            font-size: 12px;
+            opacity: .8;
+        }
+
+        /* =========================================
+           MENU
+        ========================================= */
+
+        .menu-title {
+            font-size: 11px;
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            opacity: .6;
+
+            margin:
+                18px 12px 8px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 12px 14px;
+
+            margin-bottom: 5px;
+
+            color: white;
+            text-decoration: none;
+
+            border-radius: 11px;
+
+            font-size: 14px;
+
+            transition: .2s;
+        }
+
+        .menu-item:hover {
+            background:
+                rgba(255, 255, 255, .12);
+
+            transform: translateX(2px);
+        }
+
+        .menu-item.active {
+            background: white;
+            color: #047857;
+
+            font-weight: 700;
+
+            box-shadow:
+                0 5px 15px rgba(0, 0, 0, .12);
+        }
+
+        .menu-icon {
+            width: 22px;
+
+            text-align: center;
+
+            font-size: 18px;
+        }
+
+        /* =========================================
+           MAIN
+        ========================================= */
+
+        .main-content {
+            margin-left: 260px;
+
+            width: calc(100% - 260px);
+
+            min-height: 100vh;
+        }
+
+        /* =========================================
+           TOPBAR
+        ========================================= */
+
+        .topbar {
+            height: 72px;
+
+            background: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 30px;
+
+            border-bottom:
+                1px solid #e2e8f0;
+
+            position: sticky;
+            top: 0;
+
+            z-index: 500;
+        }
+
+        .page-title {
+            font-size: 23px;
+            font-weight: 700;
+
+            color: #0f172a;
+        }
+
+        .page-subtitle {
+            font-size: 12px;
+
+            color: #64748b;
+
+            margin-top: 3px;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+        }
+
+        .admin-avatar {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 50%;
+
+            background: #dcfce7;
+            color: #047857;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: 700;
+        }
+
+        .admin-name {
+            font-size: 14px;
+            font-weight: 700;
+
+            color: #0f172a;
+        }
+
+        .admin-role {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* =========================================
+           CONTENT
+        ========================================= */
+
+        .content {
+            padding: 30px;
+        }
+
+        /* =========================================
+           CARD
+        ========================================= */
+
+        .card {
+            background: white;
+
+            border-radius: 16px;
+
+            padding: 24px;
+
+            margin-bottom: 20px;
+
+            border:
+                1px solid #e2e8f0;
+
+            box-shadow:
+                0 4px 15px rgba(15, 23, 42, .05);
+        }
+
+        /* =========================================
+           BUTTON
+        ========================================= */
+
+        .btn {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 7px;
+
+            border: none;
+
+            padding: 10px 16px;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            text-decoration: none;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            transition: .2s;
+        }
+
+        .btn-primary {
+            background: #047857;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #065f46;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        /* =========================================
+           TABLE
+        ========================================= */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+
+            color: #475569;
+
+            font-size: 13px;
+
+            text-align: left;
+
+            padding: 13px;
+
+            border-bottom:
+                1px solid #e2e8f0;
+        }
+
+        td {
+            padding: 13px;
+
+            border-bottom:
+                1px solid #f1f5f9;
+
+            font-size: 14px;
+
+            color: #334155;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        /* =========================================
+           BADGE
+        ========================================= */
+
+        .badge {
+            display: inline-flex;
+
+            padding: 5px 10px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* =========================================
+           FORM
+        ========================================= */
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            color: #334155;
+        }
+
+        .form-control {
+            width: 100%;
+
+            padding: 11px 13px;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 9px;
+
+            outline: none;
+
+            font-size: 14px;
+
+            background: white;
+        }
+
+        .form-control:focus {
+            border-color: #047857;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(4, 120, 87, .10);
+        }
+
+        /* =========================================
+           ALERT
+        ========================================= */
+
+        .alert {
+            padding: 14px 17px;
+
+            border-radius: 10px;
+
+            margin-bottom: 20px;
+
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+
+            border:
+                1px solid #bbf7d0;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+
+            border:
+                1px solid #fecaca;
+        }
+
+        /* =========================================
+           MOBILE
+        ========================================= */
+
+        .mobile-menu {
+            display: none;
+
+            border: none;
+
+            background: transparent;
+
+            font-size: 25px;
+
+            cursor: pointer;
+
+            color: #334155;
+        }
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                transform:
+                    translateX(-100%);
+
+                transition: .25s;
+            }
+
+            .sidebar.show {
+                transform:
+                    translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+
+                width: 100%;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .admin-name,
+            .admin-role {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .page-title {
+                font-size: 18px;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            table {
+                min-width: 700px;
+            }
+
+            .table-wrapper {
+                overflow-x: auto;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- =====================================
+         SIDEBAR
+    ====================================== -->
+
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
+
+        <div class="sidebar-logo">
+
+            <div class="logo-icon">
+                🏛️
+            </div>
+
+            <h2>
+                PRESENSI DESA
+            </h2>
+
+            <p>
+                Panel Administrator
+            </p>
+
+        </div>
+
+
+        <div class="menu-title">
+            MENU UTAMA
+        </div>
+
+
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                🏠
+            </span>
+
+            <span>
+                Dashboard
+            </span>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('admin_perangkat') }}"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                👥
+            </span>
+
+            <span>
+                Data Perangkat
+            </span>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('admin_presensi') }}"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                📋
+            </span>
+
+            <span>
+                Data Presensi
+            </span>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('admin_laporan') }}"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                📊
+            </span>
+
+            <span>
+                Laporan
+            </span>
+
+        </a>
+
+
+        <div class="menu-title">
+            SISTEM
+        </div>
+
+
+        <a
+            href="{{ url_for('admin_pengaturan') }}"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                ⚙️
+            </span>
+
+            <span>
+                Pengaturan
+            </span>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="menu-item"
+            onclick="return confirm('Yakin ingin keluar?')"
+        >
+
+            <span class="menu-icon">
+                🚪
+            </span>
+
+            <span>
+                Keluar
+            </span>
+
+        </a>
+
+    </aside>
+
+
+    <!-- =====================================
+         MAIN CONTENT
+    ====================================== -->
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div style="
+                display:flex;
+                align-items:center;
+                gap:15px;
+            ">
+
+                <button
+                    class="mobile-menu"
+                    onclick="toggleSidebar()"
+                    type="button"
+                >
+                    ☰
+                </button>
+
+                <div>
+
+                    <div class="page-title">
+
+                        {% block page_title %}
+                            Dashboard Admin
+                        {% endblock %}
+
+                    </div>
+
+                    <div class="page-subtitle">
+                        Sistem Informasi Presensi Perangkat Desa
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-info">
+
+                <div class="admin-avatar">
+                    {{ session.get('nama', 'A')[0]|upper }}
+                </div>
+
+                <div>
+
+                    <div class="admin-name">
+                        {{ session.get('nama', 'Administrator') }}
+                    </div>
+
+                    <div class="admin-role">
+                        Administrator
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+
+        <section class="content">
+
+            {% block content %}
+
+            {% endblock %}
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+function toggleSidebar() {
+
+    const sidebar =
+        document.getElementById("sidebar");
+
+    sidebar.classList.toggle("show");
+
+}
+
+
+/* Tutup sidebar ketika klik menu
+   pada layar kecil */
+
+document
+    .querySelectorAll(".menu-item")
+    .forEach(function(item) {
+
+        item.addEventListener(
+            "click",
+            function() {
+
+                if (
+                    window.innerWidth <= 900
+                ) {
+
+                    document
+                        .getElementById("sidebar")
+                        .classList
+                        .remove("show");
+
+                }
+
+            }
+        );
+
+    });
+
+</script>
+
+
+</body>
+
+</html>

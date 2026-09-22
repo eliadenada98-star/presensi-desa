@@ -1,0 +1,1207 @@
+{% extends "base_perangkat.html" %}
+
+{% block title %}
+Profil Saya
+{% endblock %}
+
+{% block page_title %}
+Profil Saya
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    /* =====================================================
+       CONTAINER
+    ===================================================== */
+
+    .profil-container {
+        max-width: 950px;
+        margin: 0 auto;
+        padding-bottom: 40px;
+    }
+
+
+    /* =====================================================
+       ALERT
+    ===================================================== */
+
+    .alert-success {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+
+        padding: 14px 18px;
+
+        border-radius: 12px;
+
+        margin-bottom: 20px;
+
+        font-weight: 600;
+    }
+
+
+    .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+
+        padding: 14px 18px;
+
+        border-radius: 12px;
+
+        margin-bottom: 20px;
+
+        font-weight: 600;
+    }
+
+
+    /* =====================================================
+       HEADER PROFIL
+    ===================================================== */
+
+    .profil-header {
+
+        background:
+            linear-gradient(
+                135deg,
+                #0f766e,
+                #115e59
+            );
+
+        border-radius: 22px;
+
+        padding: 32px;
+
+        color: white;
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 28px;
+
+        margin-bottom: 25px;
+
+        box-shadow:
+            0 10px 30px
+            rgba(15, 118, 110, 0.20);
+    }
+
+
+    /* =====================================================
+       FOTO
+    ===================================================== */
+
+    .foto-wrapper {
+
+        position: relative;
+
+        width: 125px;
+        height: 125px;
+
+        flex-shrink: 0;
+    }
+
+
+    .foto-profil {
+
+        width: 125px;
+        height: 125px;
+
+        border-radius: 50%;
+
+        overflow: hidden;
+
+        background: white;
+
+        border: 5px solid white;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        color: #0f766e;
+
+        font-size: 48px;
+
+        font-weight: 700;
+
+        box-shadow:
+            0 5px 20px
+            rgba(0, 0, 0, .20);
+    }
+
+
+    .foto-profil img {
+
+        width: 100%;
+        height: 100%;
+
+        object-fit: cover;
+
+        display: block;
+    }
+
+
+    /* =====================================================
+       TOMBOL CAMERA
+    ===================================================== */
+
+    .btn-camera {
+
+        position: absolute;
+
+        right: -3px;
+        bottom: -3px;
+
+        width: 42px;
+        height: 42px;
+
+        border-radius: 50%;
+
+        background: white;
+
+        color: #0f766e;
+
+        border: 3px solid #0f766e;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        cursor: pointer;
+
+        font-size: 18px;
+
+        box-shadow:
+            0 3px 10px
+            rgba(0, 0, 0, .20);
+
+        transition: .2s;
+    }
+
+
+    .btn-camera:hover {
+
+        transform: scale(1.08);
+
+        background: #f0fdfa;
+    }
+
+
+    /* =====================================================
+       JUDUL PROFIL
+    ===================================================== */
+
+    .profil-header h1 {
+
+        margin: 0 0 8px 0;
+
+        font-size: 28px;
+
+        line-height: 1.2;
+    }
+
+
+    .profil-header p {
+
+        margin: 0;
+
+        opacity: .9;
+
+        font-size: 16px;
+    }
+
+
+    /* =====================================================
+       CARD
+    ===================================================== */
+
+    .card {
+
+        background: white;
+
+        border-radius: 18px;
+
+        padding: 26px;
+
+        margin-bottom: 20px;
+
+        box-shadow:
+            0 5px 20px
+            rgba(0, 0, 0, .06);
+
+        border: 1px solid #f1f5f9;
+    }
+
+
+    .card h2 {
+
+        margin: 0 0 20px 0;
+
+        font-size: 20px;
+
+        color: #111827;
+    }
+
+
+    /* =====================================================
+       UPLOAD AREA
+    ===================================================== */
+
+    .upload-area {
+
+        border: 2px dashed #cbd5e1;
+
+        border-radius: 16px;
+
+        padding: 35px 25px;
+
+        text-align: center;
+
+        background: #f8fafc;
+
+        transition: .2s;
+    }
+
+
+    .upload-area:hover {
+
+        border-color: #0f766e;
+
+        background: #f0fdfa;
+    }
+
+
+    .upload-icon {
+
+        font-size: 45px;
+
+        margin-bottom: 10px;
+    }
+
+
+    .upload-title {
+
+        font-size: 17px;
+
+        font-weight: 700;
+
+        color: #111827;
+
+        margin-bottom: 8px;
+    }
+
+
+    .upload-info {
+
+        color: #64748b;
+
+        font-size: 14px;
+
+        line-height: 1.7;
+
+        margin-bottom: 20px;
+    }
+
+
+    /* =====================================================
+       INPUT FILE
+    ===================================================== */
+
+    .input-file {
+
+        display: none;
+    }
+
+
+    /* =====================================================
+       TOMBOL PILIH
+    ===================================================== */
+
+    .btn-pilih {
+
+        display: inline-block;
+
+        background: #0f766e;
+
+        color: white;
+
+        padding: 12px 22px;
+
+        border-radius: 10px;
+
+        cursor: pointer;
+
+        font-weight: 600;
+
+        transition: .2s;
+    }
+
+
+    .btn-pilih:hover {
+
+        background: #115e59;
+
+        transform: translateY(-1px);
+    }
+
+
+    /* =====================================================
+       NAMA FILE
+    ===================================================== */
+
+    .nama-file {
+
+        margin-top: 15px;
+
+        color: #64748b;
+
+        font-size: 14px;
+
+        word-break: break-word;
+    }
+
+
+    /* =====================================================
+       PREVIEW
+    ===================================================== */
+
+    .preview {
+
+        display: none;
+
+        margin-top: 25px;
+
+        padding-top: 20px;
+
+        border-top:
+            1px solid #e5e7eb;
+    }
+
+
+    .preview p {
+
+        margin: 0 0 12px 0;
+
+        color: #374151;
+
+        font-weight: 600;
+    }
+
+
+    .preview img {
+
+        width: 150px;
+        height: 150px;
+
+        object-fit: cover;
+
+        border-radius: 50%;
+
+        border: 5px solid #0f766e;
+
+        box-shadow:
+            0 5px 20px
+            rgba(0, 0, 0, .12);
+    }
+
+
+    /* =====================================================
+       TOMBOL SIMPAN
+    ===================================================== */
+
+    .btn-simpan {
+
+        width: 100%;
+
+        margin-top: 20px;
+
+        padding: 14px;
+
+        border: none;
+
+        border-radius: 11px;
+
+        background: #16a34a;
+
+        color: white;
+
+        font-size: 15px;
+
+        font-weight: 700;
+
+        cursor: pointer;
+
+        transition: .2s;
+    }
+
+
+    .btn-simpan:hover:not(:disabled) {
+
+        background: #15803d;
+
+        transform: translateY(-1px);
+    }
+
+
+    .btn-simpan:disabled {
+
+        background: #cbd5e1;
+
+        color: #64748b;
+
+        cursor: not-allowed;
+    }
+
+
+    /* =====================================================
+       DATA GRID
+    ===================================================== */
+
+    .data-grid {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+        gap: 0 25px;
+    }
+
+
+    .data-item {
+
+        padding: 17px 0;
+
+        border-bottom:
+            1px solid #e5e7eb;
+    }
+
+
+    .data-label {
+
+        color: #64748b;
+
+        font-size: 13px;
+
+        margin-bottom: 6px;
+    }
+
+
+    .data-value {
+
+        color: #111827;
+
+        font-size: 16px;
+
+        font-weight: 600;
+
+        word-break: break-word;
+    }
+
+
+    /* =====================================================
+       STATUS
+    ===================================================== */
+
+    .status {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        gap: 5px;
+
+        background: #dcfce7;
+
+        color: #166534;
+
+        padding: 6px 12px;
+
+        border-radius: 20px;
+
+        font-size: 12px;
+
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 700px) {
+
+        .profil-container {
+
+            padding: 0 10px 30px 10px;
+        }
+
+
+        .profil-header {
+
+            flex-direction: column;
+
+            text-align: center;
+
+            padding: 28px 20px;
+        }
+
+
+        .profil-header h1 {
+
+            font-size: 24px;
+        }
+
+
+        .data-grid {
+
+            grid-template-columns: 1fr;
+        }
+
+
+        .card {
+
+            padding: 20px;
+        }
+
+
+        .upload-area {
+
+            padding: 28px 15px;
+        }
+
+    }
+
+</style>
+
+
+<div class="profil-container">
+
+
+    <!-- =================================================
+         PESAN SUKSES
+    ================================================= -->
+
+    {% if success %}
+
+        <div class="alert-success">
+
+            ✅ {{ success }}
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =================================================
+         PESAN ERROR
+    ================================================= -->
+
+    {% if error %}
+
+        <div class="alert-error">
+
+            ❌ {{ error }}
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =================================================
+         HEADER PROFIL
+    ================================================= -->
+
+    <div class="profil-header">
+
+
+        <!-- FOTO -->
+
+        <div class="foto-wrapper">
+
+
+            <div class="foto-profil">
+
+
+                {% if perangkat.foto %}
+
+                    <img
+                        src="{{ url_for(
+                            'static',
+                            filename=perangkat.foto
+                        ) }}"
+                        alt="Foto Profil"
+                    >
+
+                {% else %}
+
+                    {{ perangkat.nama[0]|upper }}
+
+                {% endif %}
+
+
+            </div>
+
+
+            <!-- Tombol kamera -->
+
+            <label
+                for="foto"
+                class="btn-camera"
+                title="Ganti foto profil"
+            >
+
+                📷
+
+            </label>
+
+
+        </div>
+
+
+        <!-- INFORMASI NAMA -->
+
+        <div>
+
+            <h1>
+                {{ perangkat.nama }}
+            </h1>
+
+            <p>
+                {{ perangkat.jabatan or "Perangkat Desa" }}
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =================================================
+         CARD GANTI FOTO
+    ================================================= -->
+
+    <div class="card">
+
+
+        <h2>
+            📷 Ganti Foto Profil
+        </h2>
+
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+
+            <!-- INPUT FILE -->
+
+            <input
+                type="file"
+                name="foto"
+                id="foto"
+                class="input-file"
+                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+            >
+
+
+            <!-- AREA UPLOAD -->
+
+            <div class="upload-area">
+
+
+                <div class="upload-icon">
+                    🖼️
+                </div>
+
+
+                <div class="upload-title">
+
+                    Pilih Foto Profil Baru
+
+                </div>
+
+
+                <div class="upload-info">
+
+                    Pilih foto yang ingin digunakan
+                    sebagai foto profil.<br>
+
+                    Format:
+                    JPG, JPEG, PNG, atau WEBP.<br>
+
+                    Ukuran maksimal:
+                    5 MB.
+
+                </div>
+
+
+                <!-- TOMBOL PILIH FOTO -->
+
+                <label
+                    for="foto"
+                    class="btn-pilih"
+                >
+
+                    📁 Pilih Foto
+
+                </label>
+
+
+                <!-- NAMA FILE -->
+
+                <div
+                    id="namaFile"
+                    class="nama-file"
+                >
+
+                    Belum ada foto dipilih
+
+                </div>
+
+
+                <!-- PREVIEW -->
+
+                <div
+                    id="preview"
+                    class="preview"
+                >
+
+                    <p>
+                        Preview foto baru:
+                    </p>
+
+
+                    <img
+                        id="previewImage"
+                        src=""
+                        alt="Preview Foto"
+                    >
+
+                </div>
+
+
+            </div>
+
+
+            <!-- TOMBOL SIMPAN -->
+
+            <button
+                type="submit"
+                class="btn-simpan"
+                id="btnSimpan"
+                disabled
+            >
+
+                💾 Simpan Foto Profil
+
+            </button>
+
+
+        </form>
+
+
+    </div>
+
+
+    <!-- =================================================
+         DATA DIRI
+    ================================================= -->
+
+    <div class="card">
+
+
+        <h2>
+            👤 Data Diri
+        </h2>
+
+
+        <div class="data-grid">
+
+
+            <!-- NAMA -->
+
+            <div class="data-item">
+
+                <div class="data-label">
+                    Nama Lengkap
+                </div>
+
+                <div class="data-value">
+                    {{ perangkat.nama or "-" }}
+                </div>
+
+            </div>
+
+
+            <!-- NIK -->
+
+            <div class="data-item">
+
+                <div class="data-label">
+                    NIK
+                </div>
+
+                <div class="data-value">
+                    {{ perangkat.nik or "-" }}
+                </div>
+
+            </div>
+
+
+            <!-- JABATAN -->
+
+            <div class="data-item">
+
+                <div class="data-label">
+                    Jabatan
+                </div>
+
+                <div class="data-value">
+                    {{ perangkat.jabatan or "-" }}
+                </div>
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="data-item">
+
+                <div class="data-label">
+                    Status
+                </div>
+
+                <div class="data-value">
+
+
+                    <span class="status">
+
+                        ✓
+
+                        {{ perangkat.status or "Aktif" }}
+
+                    </span>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =================================================
+         INFORMASI AKUN
+    ================================================= -->
+
+    <div class="card">
+
+
+        <h2>
+            🔐 Informasi Akun
+        </h2>
+
+
+        <div class="data-grid">
+
+
+            <!-- USERNAME -->
+
+            <div class="data-item">
+
+                <div class="data-label">
+                    Username
+                </div>
+
+                <div class="data-value">
+
+                    {{ perangkat.username or "-" }}
+
+                </div>
+
+            </div>
+
+
+            <!-- ROLE -->
+
+            <div class="data-item">
+
+                <div class="data-label">
+                    Role
+                </div>
+
+                <div class="data-value">
+
+                    Perangkat Desa
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+// =====================================================
+// AMBIL ELEMENT
+// =====================================================
+
+const foto =
+    document.getElementById("foto");
+
+
+const namaFile =
+    document.getElementById("namaFile");
+
+
+const preview =
+    document.getElementById("preview");
+
+
+const previewImage =
+    document.getElementById("previewImage");
+
+
+const btnSimpan =
+    document.getElementById("btnSimpan");
+
+
+// =====================================================
+// FORMAT YANG DIIZINKAN
+// =====================================================
+
+const allowedTypes = [
+
+    "image/jpeg",
+
+    "image/png",
+
+    "image/webp"
+
+];
+
+
+// =====================================================
+// KETIKA FOTO DIPILIH
+// =====================================================
+
+foto.addEventListener(
+    "change",
+    function () {
+
+
+        // ---------------------------------------------
+        // CEK FILE
+        // ---------------------------------------------
+
+        if (
+            !this.files ||
+            this.files.length === 0
+        ) {
+
+            namaFile.innerText =
+                "Belum ada foto dipilih";
+
+            preview.style.display =
+                "none";
+
+            previewImage.src =
+                "";
+
+            btnSimpan.disabled =
+                true;
+
+            return;
+
+        }
+
+
+        // ---------------------------------------------
+        // AMBIL FILE
+        // ---------------------------------------------
+
+        const file =
+            this.files[0];
+
+
+        // ---------------------------------------------
+        // CEK FORMAT
+        // ---------------------------------------------
+
+        if (
+            !allowedTypes.includes(
+                file.type
+            )
+        ) {
+
+            alert(
+                "Format foto harus JPG, JPEG, PNG, atau WEBP."
+            );
+
+            this.value = "";
+
+            namaFile.innerText =
+                "Belum ada foto dipilih";
+
+            preview.style.display =
+                "none";
+
+            previewImage.src =
+                "";
+
+            btnSimpan.disabled =
+                true;
+
+            return;
+
+        }
+
+
+        // ---------------------------------------------
+        // CEK UKURAN
+        // ---------------------------------------------
+
+        const maxSize =
+            5 * 1024 * 1024;
+
+
+        if (
+            file.size > maxSize
+        ) {
+
+            alert(
+                "Ukuran foto maksimal 5 MB."
+            );
+
+            this.value = "";
+
+            namaFile.innerText =
+                "Belum ada foto dipilih";
+
+            preview.style.display =
+                "none";
+
+            previewImage.src =
+                "";
+
+            btnSimpan.disabled =
+                true;
+
+            return;
+
+        }
+
+
+        // ---------------------------------------------
+        // TAMPILKAN NAMA FILE
+        // ---------------------------------------------
+
+        namaFile.innerText =
+            "📄 " + file.name;
+
+
+        // ---------------------------------------------
+        // BUAT PREVIEW
+        // ---------------------------------------------
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function (event) {
+
+                previewImage.src =
+                    event.target.result;
+
+                preview.style.display =
+                    "block";
+
+            };
+
+
+        reader.readAsDataURL(
+            file
+        );
+
+
+        // ---------------------------------------------
+        // AKTIFKAN TOMBOL SIMPAN
+        // ---------------------------------------------
+
+        btnSimpan.disabled =
+            false;
+
+    }
+);
+
+
+// =====================================================
+// CEGAH SUBMIT JIKA TIDAK ADA FOTO
+// =====================================================
+
+const form =
+    foto.closest("form");
+
+
+form.addEventListener(
+    "submit",
+    function (event) {
+
+
+        if (
+            !foto.files ||
+            foto.files.length === 0
+        ) {
+
+            event.preventDefault();
+
+            alert(
+                "Silakan pilih foto terlebih dahulu."
+            );
+
+            return;
+
+        }
+
+
+        // ---------------------------------------------
+        // UBAH TOMBOL SAAT PROSES
+        // ---------------------------------------------
+
+        btnSimpan.disabled =
+            true;
+
+        btnSimpan.innerText =
+            "⏳ Menyimpan Foto...";
+
+
+    }
+);
+
+</script>
+
+{% endblock %}

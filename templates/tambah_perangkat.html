@@ -1,0 +1,231 @@
+{% extends "base_admin.html" %}
+
+{% block title %}
+Tambah Perangkat
+{% endblock %}
+
+{% block page_title %}
+Tambah Perangkat
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .form-card {
+        background: white;
+        max-width: 750px;
+        border-radius: 18px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+    }
+
+    .form-title {
+        color: #183b32;
+        margin-bottom: 25px;
+    }
+
+    .section-title {
+        color: #087f5b;
+        margin: 25px 0 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .group {
+        margin-bottom: 18px;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 7px;
+        color: #374151;
+    }
+
+    input {
+        width: 100%;
+        padding: 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        font-size: 15px;
+        outline: none;
+    }
+
+    input:focus {
+        border-color: #087f5b;
+        box-shadow: 0 0 0 3px rgba(8,127,91,0.1);
+    }
+
+    .error {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 13px;
+        border-radius: 9px;
+        margin-bottom: 20px;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .btn {
+        padding: 13px 20px;
+        border-radius: 9px;
+        border: none;
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .btn-save {
+        background: #087f5b;
+        color: white;
+        flex: 1;
+    }
+
+    .btn-save:hover {
+        background: #066b4d;
+    }
+
+    .btn-back {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+</style>
+
+
+<div class="form-card">
+
+    <h2 class="form-title">
+        👤 Tambah Perangkat Desa
+    </h2>
+
+
+    {% if error %}
+
+    <div class="error">
+        ⚠️ {{ error }}
+    </div>
+
+    {% endif %}
+
+
+    <form method="POST">
+
+        <h3 class="section-title">
+            📋 Data Perangkat
+        </h3>
+
+
+        <div class="group">
+
+            <label>
+                Nama Lengkap
+            </label>
+
+            <input
+                type="text"
+                name="nama"
+                placeholder="Contoh: Ahmad"
+                required
+            >
+
+        </div>
+
+
+        <div class="group">
+
+            <label>
+                NIK
+            </label>
+
+            <input
+                type="text"
+                name="nik"
+                placeholder="Masukkan NIK"
+            >
+
+        </div>
+
+
+        <div class="group">
+
+            <label>
+                Jabatan
+            </label>
+
+            <input
+                type="text"
+                name="jabatan"
+                placeholder="Contoh: Kepala Desa"
+                required
+            >
+
+        </div>
+
+
+        <h3 class="section-title">
+            🔐 Akun Login
+        </h3>
+
+
+        <div class="group">
+
+            <label>
+                Username
+            </label>
+
+            <input
+                type="text"
+                name="username"
+                placeholder="Buat username"
+                required
+            >
+
+        </div>
+
+
+        <div class="group">
+
+            <label>
+                Password Awal
+            </label>
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Buat password awal"
+                required
+            >
+
+        </div>
+
+
+        <div class="buttons">
+
+            <a
+                href="{{ url_for('admin_perangkat') }}"
+                class="btn btn-back"
+            >
+                ← Kembali
+            </a>
+
+            <button
+                type="submit"
+                class="btn btn-save"
+            >
+                💾 Simpan Perangkat
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

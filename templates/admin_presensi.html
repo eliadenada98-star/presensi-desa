@@ -1,0 +1,1351 @@
+{% extends "base_admin.html" %}
+
+{% block title %}
+Data Presensi
+{% endblock %}
+
+{% block page_title %}
+Data Presensi
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+    /* =====================================================
+       CONTAINER
+    ===================================================== */
+
+    .presensi-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
+
+    .header-card {
+        background: linear-gradient(
+            135deg,
+            #064e3b,
+            #047857
+        );
+
+        color: white;
+
+        padding: 28px;
+
+        border-radius: 20px;
+
+        margin-bottom: 22px;
+
+        box-shadow:
+            0 10px 30px
+            rgba(4, 120, 87, .18);
+    }
+
+    .header-card h1 {
+        margin: 0 0 7px;
+
+        font-size: 26px;
+    }
+
+    .header-card p {
+        margin: 0;
+
+        opacity: .9;
+
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+       STATISTIK
+    ===================================================== */
+
+    .stats {
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 18px;
+
+        margin-bottom: 22px;
+    }
+
+    .stat {
+        background: white;
+
+        border: 1px solid #e2e8f0;
+
+        border-radius: 16px;
+
+        padding: 20px;
+
+        box-shadow:
+            0 4px 15px
+            rgba(15, 23, 42, .05);
+    }
+
+    .stat-icon {
+        font-size: 25px;
+
+        margin-bottom: 8px;
+    }
+
+    .stat-number {
+        font-size: 26px;
+
+        font-weight: 800;
+
+        color: #0f172a;
+    }
+
+    .stat-label {
+        color: #64748b;
+
+        font-size: 13px;
+
+        margin-top: 3px;
+    }
+
+
+    /* =====================================================
+       CARD
+    ===================================================== */
+
+    .card {
+        background: white;
+
+        border-radius: 18px;
+
+        border: 1px solid #e2e8f0;
+
+        padding: 24px;
+
+        box-shadow:
+            0 4px 15px
+            rgba(15, 23, 42, .05);
+    }
+
+    .card-header {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        margin-bottom: 20px;
+    }
+
+    .card-title {
+        font-size: 19px;
+
+        font-weight: 700;
+
+        color: #0f172a;
+    }
+
+
+    /* =====================================================
+       TABLE
+    ===================================================== */
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+
+        min-width: 1200px;
+
+        border-collapse: collapse;
+    }
+
+    th {
+        background: #f8fafc;
+
+        color: #475569;
+
+        font-size: 12px;
+
+        padding: 14px 12px;
+
+        text-align: left;
+
+        border-bottom:
+            1px solid #e2e8f0;
+
+        white-space: nowrap;
+    }
+
+    td {
+        padding: 13px 12px;
+
+        border-bottom:
+            1px solid #f1f5f9;
+
+        font-size: 13px;
+
+        color: #334155;
+
+        vertical-align: middle;
+    }
+
+    tr:hover td {
+        background: #f8fafc;
+    }
+
+
+    /* =====================================================
+       PERANGKAT
+    ===================================================== */
+
+    .nama {
+        font-weight: 700;
+
+        color: #0f172a;
+    }
+
+    .jabatan {
+        color: #64748b;
+
+        font-size: 11px;
+
+        margin-top: 3px;
+    }
+
+
+    /* =====================================================
+       JAM
+    ===================================================== */
+
+    .jam {
+        display: inline-flex;
+
+        padding: 6px 9px;
+
+        border-radius: 8px;
+
+        background: #dcfce7;
+
+        color: #166534;
+
+        font-weight: 700;
+
+        font-size: 12px;
+    }
+
+    .jam-pulang {
+        background: #dbeafe;
+
+        color: #1d4ed8;
+    }
+
+
+    /* =====================================================
+       FOTO
+    ===================================================== */
+
+    .foto {
+        width: 60px;
+
+        height: 60px;
+
+        object-fit: cover;
+
+        border-radius: 10px;
+
+        border: 2px solid #e2e8f0;
+
+        cursor: pointer;
+
+        transition: .2s;
+    }
+
+    .foto:hover {
+        transform: scale(1.07);
+
+        border-color: #047857;
+    }
+
+    .tanpa-foto {
+        width: 60px;
+
+        height: 60px;
+
+        border-radius: 10px;
+
+        background: #f1f5f9;
+
+        border:
+            1px dashed #cbd5e1;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        text-align: center;
+
+        color: #94a3b8;
+
+        font-size: 9px;
+    }
+
+
+    /* =====================================================
+       STATUS
+    ===================================================== */
+
+    .badge {
+        display: inline-flex;
+
+        padding: 6px 10px;
+
+        border-radius: 20px;
+
+        font-size: 11px;
+
+        font-weight: 700;
+    }
+
+    .hadir {
+        background: #dcfce7;
+
+        color: #166534;
+    }
+
+    .belum {
+        background: #fef3c7;
+
+        color: #92400e;
+    }
+
+    .kosong {
+        color: #94a3b8;
+
+        font-size: 12px;
+    }
+
+
+    /* =====================================================
+       GPS
+    ===================================================== */
+
+    .gps-container {
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 6px;
+    }
+
+    .gps-button {
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        width: fit-content;
+
+        min-width: 105px;
+
+        padding: 7px 10px;
+
+        border-radius: 8px;
+
+        color: white;
+
+        text-decoration: none;
+
+        font-size: 11px;
+
+        font-weight: 700;
+
+        transition: all .2s;
+
+        box-shadow:
+            0 2px 5px
+            rgba(15, 23, 42, .12);
+    }
+
+    .gps-button:hover {
+        transform: translateY(-2px);
+
+        text-decoration: none;
+
+        box-shadow:
+            0 5px 10px
+            rgba(15, 23, 42, .18);
+    }
+
+    .gps-button.masuk {
+        background: #059669;
+    }
+
+    .gps-button.masuk:hover {
+        background: #047857;
+    }
+
+    .gps-button.pulang {
+        background: #2563eb;
+    }
+
+    .gps-button.pulang:hover {
+        background: #1d4ed8;
+    }
+
+    .gps-icon {
+        margin-right: 4px;
+    }
+
+
+    /* =====================================================
+       EMPTY
+    ===================================================== */
+
+    .empty {
+        text-align: center;
+
+        padding: 60px 20px;
+
+        color: #64748b;
+    }
+
+    .empty-icon {
+        font-size: 50px;
+
+        margin-bottom: 12px;
+    }
+
+
+    /* =====================================================
+       HAPUS
+    ===================================================== */
+
+    .btn-hapus {
+        border: none;
+
+        background: #dc2626;
+
+        color: white;
+
+        padding: 8px 12px;
+
+        border-radius: 8px;
+
+        cursor: pointer;
+
+        font-weight: 700;
+
+        font-size: 12px;
+
+        transition: .2s;
+    }
+
+    .btn-hapus:hover {
+        background: #b91c1c;
+
+        transform: translateY(-1px);
+    }
+
+
+    /* =====================================================
+       MODAL FOTO
+    ===================================================== */
+
+    .modal {
+        display: none;
+
+        position: fixed;
+
+        inset: 0;
+
+        background:
+            rgba(0, 0, 0, .82);
+
+        z-index: 9999;
+
+        align-items: center;
+
+        justify-content: center;
+
+        padding: 20px;
+    }
+
+    .modal.show {
+        display: flex;
+    }
+
+    .modal-box {
+        position: relative;
+
+        max-width: 900px;
+
+        max-height: 90vh;
+    }
+
+    .modal-box img {
+        max-width: 100%;
+
+        max-height: 82vh;
+
+        border-radius: 15px;
+
+        display: block;
+    }
+
+    .close-modal {
+        position: absolute;
+
+        right: -15px;
+
+        top: -15px;
+
+        width: 40px;
+
+        height: 40px;
+
+        border: none;
+
+        border-radius: 50%;
+
+        background: white;
+
+        color: #334155;
+
+        font-size: 24px;
+
+        cursor: pointer;
+
+        z-index: 2;
+    }
+
+    .close-modal:hover {
+        background: #f1f5f9;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 800px) {
+
+        .stats {
+            grid-template-columns: 1fr;
+        }
+
+        .header-card {
+            padding: 22px;
+        }
+
+        .card {
+            padding: 17px;
+        }
+
+    }
+
+</style>
+
+
+<div class="presensi-container">
+
+
+    <!-- =================================================
+         HEADER
+    ================================================= -->
+
+    <div class="header-card">
+
+        <h1>
+            📋 Data Presensi Perangkat
+        </h1>
+
+        <p>
+            Monitoring seluruh aktivitas presensi perangkat desa.
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         HITUNG STATISTIK
+    ================================================= -->
+
+    {% set total = data|length %}
+
+    {% set total_masuk = namespace(value=0) %}
+
+    {% set total_pulang = namespace(value=0) %}
+
+
+    {% for item in data %}
+
+        {% if item.jam_masuk %}
+
+            {% set total_masuk.value =
+                total_masuk.value + 1
+            %}
+
+        {% endif %}
+
+
+        {% if item.jam_pulang %}
+
+            {% set total_pulang.value =
+                total_pulang.value + 1
+            %}
+
+        {% endif %}
+
+    {% endfor %}
+
+
+    <!-- =================================================
+         STATISTIK
+    ================================================= -->
+
+    <div class="stats">
+
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                📋
+            </div>
+
+            <div class="stat-number">
+                {{ total }}
+            </div>
+
+            <div class="stat-label">
+                Total Data Presensi
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                🟢
+            </div>
+
+            <div class="stat-number">
+                {{ total_masuk.value }}
+            </div>
+
+            <div class="stat-label">
+                Sudah Absen Masuk
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-icon">
+                🔵
+            </div>
+
+            <div class="stat-number">
+                {{ total_pulang.value }}
+            </div>
+
+            <div class="stat-label">
+                Sudah Absen Pulang
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =================================================
+         DATA PRESENSI
+    ================================================= -->
+
+    <div class="card">
+
+
+        <div class="card-header">
+
+            <div class="card-title">
+                📊 Daftar Presensi
+            </div>
+
+        </div>
+
+
+        {% if data %}
+
+
+        <div class="table-wrapper">
+
+
+            <table>
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            NO
+                        </th>
+
+                        <th>
+                            PERANGKAT
+                        </th>
+
+                        <th>
+                            TANGGAL
+                        </th>
+
+                        <th>
+                            FOTO MASUK
+                        </th>
+
+                        <th>
+                            JAM MASUK
+                        </th>
+
+                        <th>
+                            FOTO PULANG
+                        </th>
+
+                        <th>
+                            JAM PULANG
+                        </th>
+
+                        <th>
+                            LOKASI
+                        </th>
+
+                        <th>
+                            STATUS
+                        </th>
+
+                        <th>
+                            AKSI
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                {% for item in data %}
+
+
+                    <tr>
+
+
+                        <!-- NO -->
+
+                        <td>
+                            {{ loop.index }}
+                        </td>
+
+
+                        <!-- PERANGKAT -->
+
+                        <td>
+
+                            <div class="nama">
+                                {{ item.nama or "-" }}
+                            </div>
+
+                            <div class="jabatan">
+                                {{ item.jabatan or "Perangkat Desa" }}
+                            </div>
+
+                        </td>
+
+
+                        <!-- TANGGAL -->
+
+                        <td>
+                            {{ item.tanggal or "-" }}
+                        </td>
+
+
+                        <!-- FOTO MASUK -->
+
+                        <td>
+
+
+                            {% if item.foto_masuk %}
+
+
+                                <img
+                                    src="{{ url_for(
+                                        'static',
+                                        filename=item.foto_masuk
+                                    ) }}"
+
+                                    class="foto"
+
+                                    alt="Foto Masuk"
+
+                                    title="Klik untuk memperbesar"
+
+                                    onclick="
+                                        openFoto(this.src)
+                                    "
+                                >
+
+
+                            {% else %}
+
+
+                                <div class="tanpa-foto">
+
+                                    Tidak ada foto
+
+                                </div>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                        <!-- JAM MASUK -->
+
+                        <td>
+
+
+                            {% if item.jam_masuk %}
+
+
+                                <span class="jam">
+
+                                    🕐
+                                    {{ item.jam_masuk }}
+
+                                </span>
+
+
+                            {% else %}
+
+
+                                <span class="kosong">
+
+                                    Belum absen
+
+                                </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                        <!-- FOTO PULANG -->
+
+                        <td>
+
+
+                            {% if item.foto_pulang %}
+
+
+                                <img
+                                    src="{{ url_for(
+                                        'static',
+                                        filename=item.foto_pulang
+                                    ) }}"
+
+                                    class="foto"
+
+                                    alt="Foto Pulang"
+
+                                    title="Klik untuk memperbesar"
+
+                                    onclick="
+                                        openFoto(this.src)
+                                    "
+                                >
+
+
+                            {% else %}
+
+
+                                <div class="tanpa-foto">
+
+                                    Belum ada foto
+
+                                </div>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                        <!-- JAM PULANG -->
+
+                        <td>
+
+
+                            {% if item.jam_pulang %}
+
+
+                                <span
+                                    class="
+                                        jam
+                                        jam-pulang
+                                    "
+                                >
+
+                                    🕐
+                                    {{ item.jam_pulang }}
+
+                                </span>
+
+
+                            {% else %}
+
+
+                                <span class="kosong">
+
+                                    Belum absen
+
+                                </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                        <!-- =================================================
+                             LOKASI / GPS
+                        ================================================= -->
+
+                        <td>
+
+
+                            <div class="gps-container">
+
+
+                                <!-- GPS MASUK -->
+
+                                {% if
+                                    item.latitude_masuk
+                                    is not none
+                                    and
+                                    item.longitude_masuk
+                                    is not none
+                                %}
+
+
+                                    <a
+                                        href="https://www.google.com/maps?q={{ item.latitude_masuk }},{{ item.longitude_masuk }}"
+
+                                        target="_blank"
+
+                                        rel="noopener noreferrer"
+
+                                        class="
+                                            gps-button
+                                            masuk
+                                        "
+
+                                        title="
+                                            Buka lokasi absen masuk di Google Maps
+                                        "
+                                    >
+
+                                        <span class="gps-icon">
+                                            📍
+                                        </span>
+
+                                        GPS Masuk
+
+                                    </a>
+
+
+                                {% endif %}
+
+
+                                <!-- GPS PULANG -->
+
+                                {% if
+                                    item.latitude_pulang
+                                    is not none
+                                    and
+                                    item.longitude_pulang
+                                    is not none
+                                %}
+
+
+                                    <a
+                                        href="https://www.google.com/maps?q={{ item.latitude_pulang }},{{ item.longitude_pulang }}"
+
+                                        target="_blank"
+
+                                        rel="noopener noreferrer"
+
+                                        class="
+                                            gps-button
+                                            pulang
+                                        "
+
+                                        title="
+                                            Buka lokasi absen pulang di Google Maps
+                                        "
+                                    >
+
+                                        <span class="gps-icon">
+                                            📍
+                                        </span>
+
+                                        GPS Pulang
+
+                                    </a>
+
+
+                                {% endif %}
+
+
+                                <!-- GPS LAMA / CADANGAN -->
+
+                                {% if
+                                    (
+                                        item.latitude_masuk is none
+                                        or
+                                        item.longitude_masuk is none
+                                    )
+                                    and
+                                    (
+                                        item.latitude_pulang is none
+                                        or
+                                        item.longitude_pulang is none
+                                    )
+                                    and
+                                    item.latitude is not none
+                                    and
+                                    item.longitude is not none
+                                %}
+
+
+                                    <a
+                                        href="https://www.google.com/maps?q={{ item.latitude }},{{ item.longitude }}"
+
+                                        target="_blank"
+
+                                        rel="noopener noreferrer"
+
+                                        class="
+                                            gps-button
+                                            masuk
+                                        "
+
+                                        title="
+                                            Buka lokasi di Google Maps
+                                        "
+                                    >
+
+                                        <span class="gps-icon">
+                                            📍
+                                        </span>
+
+                                        Lihat GPS
+
+                                    </a>
+
+
+                                {% endif %}
+
+
+                                <!-- TIDAK ADA GPS -->
+
+                                {% if
+                                    (
+                                        item.latitude_masuk is none
+                                        or
+                                        item.longitude_masuk is none
+                                    )
+                                    and
+                                    (
+                                        item.latitude_pulang is none
+                                        or
+                                        item.longitude_pulang is none
+                                    )
+                                    and
+                                    (
+                                        item.latitude is none
+                                        or
+                                        item.longitude is none
+                                    )
+                                %}
+
+
+                                    <span class="kosong">
+                                        Tidak tersedia
+                                    </span>
+
+
+                                {% endif %}
+
+
+                            </div>
+
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+
+                            {% if item.status == "Hadir" %}
+
+
+                                <span class="badge hadir">
+
+                                    ✓ Hadir
+
+                                </span>
+
+
+                            {% else %}
+
+
+                                <span class="badge belum">
+
+                                    {{ item.status or "Hadir" }}
+
+                                </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                        <!-- AKSI -->
+
+                        <td>
+
+
+                            <form
+                                method="POST"
+
+                                action="{{ url_for(
+                                    'hapus_presensi',
+                                    presensi_id=item.id
+                                ) }}"
+
+                                onsubmit="
+                                    return confirm(
+                                        'Yakin ingin menghapus riwayat presensi ini? Data dan foto akan ikut dihapus.'
+                                    );
+                                "
+
+                                style="margin:0;"
+                            >
+
+
+                                <button
+                                    type="submit"
+                                    class="btn-hapus"
+                                >
+
+                                    🗑️ Hapus
+
+                                </button>
+
+
+                            </form>
+
+
+                        </td>
+
+
+                    </tr>
+
+
+                {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+        {% else %}
+
+
+            <!-- =================================================
+                 DATA KOSONG
+            ================================================= -->
+
+            <div class="empty">
+
+
+                <div class="empty-icon">
+                    📭
+                </div>
+
+
+                <strong>
+                    Belum ada data presensi
+                </strong>
+
+
+                <p>
+                    Data akan muncul setelah perangkat
+                    melakukan absen.
+                </p>
+
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</div>
+
+
+<!-- =====================================================
+     MODAL FOTO
+===================================================== -->
+
+<div
+    class="modal"
+    id="fotoModal"
+    onclick="closeFoto()"
+>
+
+
+    <div
+        class="modal-box"
+        onclick="event.stopPropagation()"
+    >
+
+
+        <button
+            type="button"
+            class="close-modal"
+            onclick="closeFoto()"
+        >
+
+            ×
+
+        </button>
+
+
+        <img
+            id="fotoBesar"
+            src=""
+            alt="Foto Presensi"
+        >
+
+
+    </div>
+
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+function openFoto(src) {
+
+    const modal =
+        document.getElementById(
+            "fotoModal"
+        );
+
+    const foto =
+        document.getElementById(
+            "fotoBesar"
+        );
+
+
+    foto.src = src;
+
+
+    modal.classList.add(
+        "show"
+    );
+
+}
+
+
+function closeFoto() {
+
+    const modal =
+        document.getElementById(
+            "fotoModal"
+        );
+
+    const foto =
+        document.getElementById(
+            "fotoBesar"
+        );
+
+
+    modal.classList.remove(
+        "show"
+    );
+
+
+    foto.src = "";
+
+}
+
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeFoto();
+
+        }
+
+    }
+);
+
+
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends "base_admin.html" %}
+
+
+{% block title %}
+Pengaturan
+{% endblock %}
+
+
+{% block page_title %}
+⚙️ Pengaturan
+{% endblock %}
+
+
+{% block content %}
+
+
+<div class="card">
+
+    <h2 style="
+        margin-bottom:8px;
+    ">
+        Pengaturan Sistem
+    </h2>
+
+    <p style="
+        color:#64748b;
+        font-size:13px;
+        margin-bottom:25px;
+    ">
+        Informasi dan konfigurasi aplikasi presensi desa.
+    </p>
+
+
+    <div style="
+        display:grid;
+        grid-template-columns:
+            repeat(auto-fit, minmax(220px, 1fr));
+        gap:18px;
+    ">
+
+
+        <div style="
+            padding:20px;
+            border-radius:12px;
+            background:#f8fafc;
+            border:1px solid #e2e8f0;
+        ">
+
+            <div style="
+                font-size:28px;
+                margin-bottom:10px;
+            ">
+                🏛️
+            </div>
+
+            <div style="
+                font-size:12px;
+                color:#64748b;
+                margin-bottom:5px;
+            ">
+                Nama Aplikasi
+            </div>
+
+            <strong>
+                Sistem Presensi Desa
+            </strong>
+
+        </div>
+
+
+        <div style="
+            padding:20px;
+            border-radius:12px;
+            background:#f8fafc;
+            border:1px solid #e2e8f0;
+        ">
+
+            <div style="
+                font-size:28px;
+                margin-bottom:10px;
+            ">
+                📅
+            </div>
+
+            <div style="
+                font-size:12px;
+                color:#64748b;
+                margin-bottom:5px;
+            ">
+                Tahun
+            </div>
+
+            <strong>
+                2026
+            </strong>
+
+        </div>
+
+
+        <div style="
+            padding:20px;
+            border-radius:12px;
+            background:#f8fafc;
+            border:1px solid #e2e8f0;
+        ">
+
+            <div style="
+                font-size:28px;
+                margin-bottom:10px;
+            ">
+                👤
+            </div>
+
+            <div style="
+                font-size:12px;
+                color:#64748b;
+                margin-bottom:5px;
+            ">
+                Login Admin
+            </div>
+
+            <strong>
+                {{ session.get("username", "admin") }}
+            </strong>
+
+        </div>
+
+
+        <div style="
+            padding:20px;
+            border-radius:12px;
+            background:#f8fafc;
+            border:1px solid #e2e8f0;
+        ">
+
+            <div style="
+                font-size:28px;
+                margin-bottom:10px;
+            ">
+                🔐
+            </div>
+
+            <div style="
+                font-size:12px;
+                color:#64748b;
+                margin-bottom:5px;
+            ">
+                Hak Akses
+            </div>
+
+            <strong>
+                Administrator
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+{% endblock %}
